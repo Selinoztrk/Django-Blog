@@ -14,6 +14,13 @@
             {% endif %}
         </small><br>
     <hr><br>
+        {% if post.header_image %}
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <img src="{{ post.header_image.url }}" alt="Tech Illustration" style="max-width: 100%; height: auto;">
+                <br><br><br>
+            </div>
+        {% endif %}
+
             {{ post.body|safe }}
 
         <br><br>
