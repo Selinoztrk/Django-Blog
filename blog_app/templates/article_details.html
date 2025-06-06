@@ -16,7 +16,7 @@
         </small><br>
     <hr><br>
         {% if post.header_image %}
-            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <div class="mt-4" style="max-width: 800px; margin: 0 auto; text-align: center;">
                 <img src="{{ post.header_image.url }}" alt="Tech Illustration" style="max-width: 100%; height: auto;">
                 <br><br><br>
             </div>
@@ -24,25 +24,32 @@
 
             {{ post.body|safe }}
 
-        <br><br>
-    <a href="{% url 'home' %}" class="btn btn-secondary">Back</a> <br><br>
-    <hr><br>
-    <form action="{% url 'like_post' post.pk %}" method="POST">
-        {% csrf_token %}
+    <div class="d-flex justify-content-end">
+        <form action="{% url 'like_post' post.pk %}" method="POST" class="d-flex align-items-center gap-2">
+            {% csrf_token %}
 
-    {% if user.is_authenticated %}
-        {% if liked  %}
-            <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-danger btn-sm">Unlike</button> 
-        {% else %}
-            <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-primary btn-sm">Like</button> 
-        {% endif %}
-    {% else %}
-        <small><a href="{% url 'login' %}">Login</a> to like.</small>
-    {% endif %}
+            {% if user.is_authenticated %}
+                {% if liked %}
+                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-danger btn-sm">
+                        👎 Unlike
+                    </button> 
+                {% else %}
+                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-primary btn-sm">
+                        👍 Like
+                    </button> 
+                {% endif %}
+            {% else %}
+                <small>
+                    <a href="{% url 'login' %}">Login</a> to like.
+                </small>
+            {% endif %}
 
-            - {{ total_likes }} Likes
-    </form> <br><br>
+            <span class="ms-2">{{ total_likes }} Likes</span>
+        </form>
+    </div>
+    <hr class="my-4">
 
+    <br><br>
     <div class="card mb-3">
   <div class="row g-0">
     <div class="col-md-2">
@@ -78,5 +85,18 @@
     </div>
   </div>
 </div><br>
+
+<h2 class="mt-4 mb-3">Comments</h2>
+    {% if not post.comments.all %}
+    <p>No Comments Yet <a href="{% url 'add_comment' post.pk %}">Add One</a></p>
+    {% else %}
+    <a href="{% url 'add_comment' post.pk %}">Add Comment</a> <br><br>
+        {% for comment in post.comments.all %}
+            <div class="mb-4 p-3 border rounded shadow-sm bg-light">
+                <h6 class="mb-1"><strong>{{ comment.name }}</strong> <small class="text-muted">– {{ comment.date_added }}</small></h6>
+                <p class="mb-0">{{ comment.body }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}<br>
 
 {% endblock %}
