@@ -1,41 +1,105 @@
 {% extends 'base.html' %}
+{% block title %}User Profile{% endblock %}
 {% load static %}
+
 {% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 text-center">
+                    {% if page_user.profile_pic %}
+                        <img src="{{ page_user.profile_pic.url }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'blog_app/images/default_pic.png' %}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% endif %}
+                    
+                    <h2 class="fw-bold">{{ page_user.user.first_name }} {{ page_user.user.last_name }}</h2>
+                    
+                    <div class="social-links mt-3">
+                        {% if page_user.website_url %}
+                            <a href="{{ page_user.website_url }}" class="btn btn-outline-primary btn-sm me-2" target="_blank">
+                                <i class="bi bi-globe"></i> Website
+                            </a>
+                        {% endif %}
+                        {% if page_user.instagram_url %}
+                            <a href="{{ page_user.instagram_url }}" class="btn btn-outline-danger btn-sm me-2" target="_blank">
+                                <i class="bi bi-instagram"></i> Instagram
+                            </a>
+                        {% endif %}
+                        {% if page_user.twitter_url %}
+                            <a href="{{ page_user.twitter_url }}" class="btn btn-outline-info btn-sm me-2" target="_blank">
+                                <i class="bi bi-twitter"></i> Twitter
+                            </a>
+                        {% endif %}
+                        {% if page_user.pinterest_url %}
+                            <a href="{{ page_user.pinterest_url }}" class="btn btn-outline-danger btn-sm" target="_blank">
+                                <i class="bi bi-pinterest"></i> Pinterest
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<h1>User Profile</h1><br>
-<div class="card mb-3">
-  <div class="row g-0">
-    <div class="col-md-2">
-  {% if page_user.profile_pic %}
-      <img src="{{ page_user.profile_pic.url }}" class="img-fluid rounded-start" width="150" height="150">
-  {% else %}
-      <img src="{% static 'blog_app/images/default_pic.png' %}" class="img-fluid rounded-start" width="160" height="160">
-  {% endif %}
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="fw-bold mb-4">
+                        <i class="bi bi-person-lines-fill"></i> About
+                    </h3>
+                    
+                    <p class="text-muted">{{ page_user.bio }}</p>
+
+                    {% if user.id == page_user.user.id %}
+                        <div class="mt-4">
+                            <a href="{% url 'edit_profile_page' page_user.id %}" class="btn btn-primary">
+                                <i class="bi bi-pencil"></i> Edit Profile
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h3 class="fw-bold mb-4">
+                        <i class="bi bi-file-text"></i> Recent Posts
+                    </h3>
+                    
+                    {% if user_posts %}
+                        <div class="list-group list-group-flush">
+                            {% for post in user_posts %}
+                                <a href="{% url 'article-detail' post.pk %}" class="list-group-item list-group-item-action border-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ post.title }}</h5>
+                                        <small class="text-muted">{{ post.post_date }}</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">{{ post.snippet }}</p>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No posts yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">{{ page_user.user.first_name }} {{ page_user.user.last_name }}</h5>
-        <p class="small text-muted">
-            {% if page_user.website_url %}
-                <a href="{{ page_user.website_url }}">Website</a> |
-            {% endif %}
+</div>
 
-            {% if page_user.instagram_url %}
-                <a href="{{ page_user.instagram_url }}">Instagram</a> |
-            {% endif %}
-
-            {% if page_user.twitter_url %}
-                <a href="{{ page_user.twitter_url }}">Twitter</a> |
-            {% endif %}
-            
-            {% if page_user.pinterest_url %}
-                <a href="{{ page_user.pinterest_url }}">Pinterest</a>
-            {% endif %}
-        </p>
-        <p class="card-text">{{ page_user.bio }}</p>
-      </div>
-    </div>
-  </div>
-</div><br>
-
+<style>
+    .card {
+        border-radius: 1rem;
+    }
+    .btn {
+        border-radius: 0.5rem;
+    }
+    .list-group-item {
+        transition: background-color 0.2s;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
 {% endblock %}

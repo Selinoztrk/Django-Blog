@@ -4,6 +4,8 @@ from .models import Post, Category, Comment
 from .forms import PostForm, EditForm, CommentForm
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.contrib.auth.models import User
 
 
 #def home(request):
@@ -31,8 +33,11 @@ class HomeView(ListView):
 
 
 def CategoryView(request, cats):
-    category_posts = Post.objects.filter(category=cats.replace('-', ' '))
-    return render(request, 'categories.html', {'cats':cats.title().replace('-', ' '), 'category_posts':category_posts})
+    category_posts = Post.objects.filter(category__iexact=cats.replace('-', ' '))
+    return render(request, 'categories.html', {
+        'cats': cats.title().replace('-', ' '),
+        'category_posts': category_posts
+    })
 
 
 class ArticleDetailView(DetailView):
@@ -93,3 +98,17 @@ class DeletePostView(DeleteView):
     model = Post
     template_name = 'delete_post.html'
     success_url = reverse_lazy('home')
+
+
+class EditProfileView(UpdateView):
+    model = User
+    template_name = 'edit_profile.html'
+    fields = ('first_name', 'last_name', 'email', 'username')
+    success_url = reverse_lazy('home')
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Profile updated successfully!')
+        return super().form_valid(form)

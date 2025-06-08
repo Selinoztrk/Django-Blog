@@ -1,102 +1,171 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}   {{ post.title_tag }}   {% endblock %}
+{% block title %}{{ post.title_tag }}{% endblock %}
 
 {% block content %}
-    <h1>{{ post.title }}</h1>
-        <small>
-            By: {{ post.author.first_name }} 
-            {{ post.author.last_name }} - {{ post.post_date }}
+<div class="article-container">
+    <div class="article-header mb-4">
+        <h1 class="display-4 fw-bold">{{ post.title }}</h1>
+        <div class="d-flex align-items-center text-muted mb-3">
+            <i class="bi bi-person-circle me-2"></i>
+            <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
+            <i class="bi bi-calendar3 ms-3 me-2"></i>
+            <span>{{ post.post_date }}</span>
             {% if user.is_authenticated %}
                 {% if user.id == post.author.id %}
-                    - <a href="{% url 'update_post' post.pk %}">(Edit)</a>
-                    <a href="{% url 'delete_post' post.pk %}">(Delete)</a>
+                    <div class="ms-3">
+                        <a href="{% url 'update_post' post.pk %}" class="btn btn-sm btn-outline-primary me-2">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_post' post.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
                 {% endif %}
             {% endif %}
-        </small><br>
-    <hr><br>
-        {% if post.header_image %}
-            <div class="mt-4" style="max-width: 800px; margin: 0 auto; text-align: center;">
-                <img src="{{ post.header_image.url }}" alt="Tech Illustration" style="max-width: 100%; height: auto;">
-                <br><br><br>
-            </div>
-        {% endif %}
+        </div>
+    </div>
 
-            {{ post.body|safe }}
+    {% if post.header_image %}
+        <div class="article-image mb-4">
+            <img src="{{ post.header_image.url }}" alt="Article Header" class="img-fluid rounded shadow">
+        </div>
+    {% endif %}
 
-    <div class="d-flex justify-content-end">
-        <form action="{% url 'like_post' post.pk %}" method="POST" class="d-flex align-items-center gap-2">
+    <div class="article-content mb-4">
+        {{ post.body|safe }}
+    </div>
+
+    <div class="article-actions mb-4">
+        <form action="{% url 'like_post' post.pk %}" method="POST" class="d-flex align-items-center">
             {% csrf_token %}
-
             {% if user.is_authenticated %}
                 {% if liked %}
-                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-danger btn-sm">
-                        👎 Unlike
-                    </button> 
+                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-danger">
+                        <i class="bi bi-hand-thumbs-down"></i> Unlike
+                    </button>
                 {% else %}
-                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-primary btn-sm">
-                        👍 Like
-                    </button> 
+                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-primary">
+                        <i class="bi bi-hand-thumbs-up"></i> Like
+                    </button>
                 {% endif %}
             {% else %}
-                <small>
-                    <a href="{% url 'login' %}">Login</a> to like.
-                </small>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Login to like
+                </a>
             {% endif %}
-
-            <span class="ms-2">{{ total_likes }} Likes</span>
+            <span class="ms-3 badge bg-secondary">
+                <i class="bi bi-heart-fill"></i> {{ total_likes }} Likes
+            </span>
         </form>
     </div>
-    <hr class="my-4">
 
-    <br><br>
-    <div class="card mb-3">
-  <div class="row g-0">
-    <div class="col-md-2">
-  {% if post.author.profile.profile_pic %}
-      <img src="{{ post.author.profile.profile_pic.url }}" class="img-fluid rounded-start" width="150" height="150">
-  {% else %}
-      <img src="{% static 'blog_app/images/default_pic.png' %}" class="img-fluid rounded-start" width="160" height="160">
-  {% endif %}
-    </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">{{ post.author.first_name }} {{ post.author.last_name }}</h5>
-        <p class="small text-muted">
-            <a href="{% url 'show_profile_page' post.author.profile.id %}">Profile Page</a> |
-            {% if post.author.profile.website_url %}
-                <a href="{{ post.author.profile.website_url }}">Website</a> |
-            {% endif %}
-
-            {% if post.author.profile.instagram_url %}
-                <a href="{{ post.author.profile.instagram_url }}">Instagram</a> |
-            {% endif %}
-
-            {% if post.author.profile.twitter_url %}
-                <a href="{{ post.author.profile.twitter_url }}">Twitter</a> |
-            {% endif %}
-            
-            {% if post.author.profile.pinterest_url %}
-                <a href="{{ post.author.profile.pinterest_url }}">Pinterest</a>
-            {% endif %}
-        </p>
-        <p class="card-text">{{ post.author.profile.bio }}</p>
-      </div>
-    </div>
-  </div>
-</div><br>
-
-<h2 class="mt-4 mb-3">Comments</h2>
-    {% if not post.comments.all %}
-    <p>No Comments Yet <a href="{% url 'add_comment' post.pk %}">Add One</a></p>
-    {% else %}
-    <a href="{% url 'add_comment' post.pk %}">Add Comment</a> <br><br>
-        {% for comment in post.comments.all %}
-            <div class="mb-4 p-3 border rounded shadow-sm bg-light">
-                <h6 class="mb-1"><strong>{{ comment.name }}</strong> <small class="text-muted">– {{ comment.date_added }}</small></h6>
-                <p class="mb-0">{{ comment.body }}</p>
+    <div class="author-card card mb-4 border-0 shadow-sm">
+        <div class="row g-0">
+            <div class="col-md-2">
+                {% if post.author.profile.profile_pic %}
+                    <img src="{{ post.author.profile.profile_pic.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'blog_app/images/default_pic.png' %}" class="img-fluid rounded-start h-100" style="object-fit: cover;">
+                {% endif %}
             </div>
-        {% endfor %}
-    {% endif %}<br>
+            <div class="col-md-10">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.author.first_name }} {{ post.author.last_name }}</h5>
+                    <div class="social-links mb-2">
+                        <a href="{% url 'show_profile_page' post.author.profile.id %}" class="btn btn-sm btn-outline-primary me-2">
+                            <i class="bi bi-person"></i> Profile
+                        </a>
+                        {% if post.author.profile.website_url %}
+                            <a href="{{ post.author.profile.website_url }}" class="btn btn-sm btn-outline-secondary me-2" target="_blank">
+                                <i class="bi bi-globe"></i> Website
+                            </a>
+                        {% endif %}
+                        {% if post.author.profile.instagram_url %}
+                            <a href="{{ post.author.profile.instagram_url }}" class="btn btn-sm btn-outline-danger me-2" target="_blank">
+                                <i class="bi bi-instagram"></i> Instagram
+                            </a>
+                        {% endif %}
+                        {% if post.author.profile.twitter_url %}
+                            <a href="{{ post.author.profile.twitter_url }}" class="btn btn-sm btn-outline-info me-2" target="_blank">
+                                <i class="bi bi-twitter"></i> Twitter
+                            </a>
+                        {% endif %}
+                        {% if post.author.profile.pinterest_url %}
+                            <a href="{{ post.author.profile.pinterest_url }}" class="btn btn-sm btn-outline-danger" target="_blank">
+                                <i class="bi bi-pinterest"></i> Pinterest
+                            </a>
+                        {% endif %}
+                    </div>
+                    <p class="card-text">{{ post.author.profile.bio }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="comments-section">
+        <h2 class="mb-4">
+            <i class="bi bi-chat-dots"></i> Comments
+        </h2>
+        
+        {% if not post.comments.all %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No comments yet. 
+                <a href="{% url 'add_comment' post.pk %}" class="alert-link">Be the first to comment!</a>
+            </div>
+        {% else %}
+            <div class="mb-4">
+                <a href="{% url 'add_comment' post.pk %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Comment
+                </a>
+            </div>
+            
+            {% for comment in post.comments.all %}
+                <div class="comment-card card mb-3 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="card-subtitle mb-0">
+                                <i class="bi bi-person-circle"></i> {{ comment.name }}
+                            </h6>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> {{ comment.date_added }}
+                            </small>
+                        </div>
+                        <p class="card-text">{{ comment.body }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .article-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .article-header {
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 1rem;
+    }
+    .article-image img {
+        width: 100%;
+        max-height: 500px;
+        object-fit: cover;
+    }
+    .article-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    .author-card img {
+        width: 100%;
+        height: 200px;
+    }
+    .comment-card {
+        transition: transform 0.2s;
+    }
+    .comment-card:hover {
+        transform: translateY(-2px);
+    }
+</style>
 {% endblock %}

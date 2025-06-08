@@ -1,27 +1,78 @@
 {% extends 'base.html' %}
-{% block title %}   Create a new Blog Post!   {% endblock %}
+{% block title %}Create a new Blog Post{% endblock %}
 
 {% block content %}
+<div class="container py-4">
+    {% if user.is_authenticated %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h1 class="display-5 fw-bold mb-4">
+                            <i class="bi bi-pencil-square"></i> Create New Post
+                        </h1>
 
-{% if user.is_authenticated %}
-    <h1>Add Blog Post</h1> <br><br>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.media }}
+                            
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field.errors }}
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
 
-    <div class="mb-3">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.media }}
-            {{ form.as_p }}
-            <button class="btn btn-secondary">Post</button>
-        </form>
-    </div> <br><br>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i> Publish Post
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <script>
-        var name = "{{ user.id }}";
-        document.getElementById("ozturk").value = name;
-    </script>
+        <script>
+            var name = "{{ user.id }}";
+            document.getElementById("ozturk").value = name;
+        </script>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">
+                <i class="bi bi-exclamation-triangle"></i> Access Denied
+            </h4>
+            <p>You need to be logged in to create a new post.</p>
+            <hr>
+            <p class="mb-0">
+                <a href="{% url 'login' %}" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            </p>
+        </div>
+    {% endif %}
+</div>
 
-{% else %}
-    You're not allowed here! (and you know it...)
-{% endif %}
-
+<style>
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+    }
+</style>
 {% endblock %}

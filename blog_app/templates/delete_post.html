@@ -1,25 +1,75 @@
 {% extends 'base.html' %}
-{% block title %}   Delete Blog Post   {% endblock %}
+{% block title %}Delete Post{% endblock %}
 
 {% block content %}
-
+<div class="container py-4">
     {% if user.is_authenticated %}
         {% if user.id == post.author.id %}
-            <h1>Delete Post</h1> <br><br>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                            </div>
+                            
+                            <h1 class="display-5 fw-bold text-center mb-4">Delete Post</h1>
+                            
+                            <div class="alert alert-warning" role="alert">
+                                <h4 class="alert-heading">
+                                    <i class="bi bi-exclamation-circle"></i> Warning!
+                                </h4>
+                                <p>Are you sure you want to delete the post "{{ post.title }}"?</p>
+                                <hr>
+                                <p class="mb-0">This action cannot be undone.</p>
+                            </div>
 
-            <h2>Delete: {{ post.title }}</h2> <br><br>
-            <div class="mb-3">
-                <form method="POST">
-                    {% csrf_token %}
-                    <strong>Are you sure?!</strong> <br><br>
-                    <button class="btn btn-secondary">Delete</button>
-                </form>
-            </div> <br><br>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                                    <a href="{% url 'article-detail' post.pk %}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash"></i> Delete Post
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% else %}
-            You're not allowed here! (and you know it...)
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle"></i> Access Denied
+                </h4>
+                <p>You can only delete your own posts.</p>
+            </div>
         {% endif %}
     {% else %}
-        You're not allowed here! (and you know it...)
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">
+                <i class="bi bi-exclamation-triangle"></i> Access Denied
+            </h4>
+            <p>You need to be logged in to delete posts.</p>
+            <hr>
+            <p class="mb-0">
+                <a href="{% url 'login' %}" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            </p>
+        </div>
     {% endif %}
+</div>
 
+<style>
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+    }
+    .alert {
+        border-radius: 0.5rem;
+    }
+</style>
 {% endblock %}

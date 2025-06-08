@@ -1,21 +1,87 @@
 {% extends 'base.html' %}
-{% block title %}   Create a new Profile Page!   {% endblock %}
+{% block title %}Create Profile{% endblock %}
 
 {% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="fw-bold mb-4">
+                        <i class="bi bi-person-plus"></i> Create Profile
+                    </h2>
 
-{% if user.is_authenticated %}
-    <h1>Create Profile Page</h1> <br><br>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+                            {{ form.bio.errors }}
+                            {{ form.bio }}
+                        </div>
 
-    <div class="mb-3">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-secondary">Create Profile Page</button>
-        </form>
-    </div> <br><br>
+                        <div class="mb-3">
+                            <label for="{{ form.profile_pic.id_for_label }}" class="form-label">Profile Picture</label>
+                            {{ form.profile_pic.errors }}
+                            {{ form.profile_pic }}
+                        </div>
 
-{% else %}
-    You're not allowed here! (and you know it...)
-{% endif %}
+                        <div class="mb-3">
+                            <label for="{{ form.website_url.id_for_label }}" class="form-label">Website URL</label>
+                            {{ form.website_url.errors }}
+                            {{ form.website_url }}
+                        </div>
 
+                        <div class="mb-3">
+                            <label for="{{ form.instagram_url.id_for_label }}" class="form-label">Instagram URL</label>
+                            {{ form.instagram_url.errors }}
+                            {{ form.instagram_url }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.twitter_url.id_for_label }}" class="form-label">Twitter URL</label>
+                            {{ form.twitter_url.errors }}
+                            {{ form.twitter_url }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.pinterest_url.id_for_label }}" class="form-label">Pinterest URL</label>
+                            {{ form.pinterest_url.errors }}
+                            {{ form.pinterest_url }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Create Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 1rem;
+    }
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+    }
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .btn {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+</style>
 {% endblock %}
