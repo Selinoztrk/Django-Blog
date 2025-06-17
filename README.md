@@ -28,7 +28,7 @@ A feature-rich blog application built with Django that allows users to create, e
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone Django-Blog
 cd BlogApp
 ```
 
